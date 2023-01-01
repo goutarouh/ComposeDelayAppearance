@@ -8,6 +8,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.debugInspectorInfo
 import kotlinx.coroutines.delay
 
 @Composable
@@ -22,16 +23,22 @@ fun LoadingScreen() {
 
 fun Modifier.delayAppearance(
     delayMills: Long = 300L
-) = composed {
-    var isShow by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) {
-        delay(delayMills)
-        isShow = true
+) = composed(
+    inspectorInfo = debugInspectorInfo {
+        name = "delayAppearance"
+        value = delayMills
+    },
+    factory = {
+        var isShow by remember { mutableStateOf(false) }
+        LaunchedEffect(Unit) {
+            delay(delayMills)
+            isShow = true
+        }
+        this.graphicsLayer {
+            alpha = if (isShow) 1f else 0f
+        }
     }
-    this.graphicsLayer {
-        alpha = if (isShow) 1f else 0f
-    }
-}
+)
 
 
 //@Composable
